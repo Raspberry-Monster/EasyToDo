@@ -1,4 +1,9 @@
 
+using EasyToDo.Services;
+using EasyToDo.Services.Database;
+using Microsoft.EntityFrameworkCore;
+using Scalar.AspNetCore;
+
 namespace EasyToDo
 {
     public class Program
@@ -12,19 +17,20 @@ namespace EasyToDo
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
-
+            
+            builder.Services.AddDbContext<EasyToDoDbContext>(options =>
+            {
+                options.UseNpgsql(builder.Configuration.GetConnectionString("Default"));
+            });
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
-                app.MapOpenApi();
-            }
+            app.MapOpenApi();
+
+            app.MapScalarApiReference();
 
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
 
             app.MapControllers();
 
