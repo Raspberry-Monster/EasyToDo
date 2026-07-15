@@ -41,9 +41,9 @@ namespace EasyToDo.Configurations
                 .HasColumnType("timestamp with time zone")
                 .HasColumnName("UpdatedAt");
 
-            builder.HasMany(user=>user.TaskLists)
-                .WithOne(taskList=>taskList.Owner)
-                .HasForeignKey(taskList=>taskList.OwnerId)
+            builder.HasMany(user => user.TaskLists)
+                .WithOne(taskList => taskList.Owner)
+                .HasForeignKey(taskList => taskList.OwnerId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

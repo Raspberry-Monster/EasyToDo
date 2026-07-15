@@ -1,7 +1,10 @@
-﻿using EasyToDo.Models.Enums;
+﻿using EasyToDo.Configurations;
+using EasyToDo.Models.Enums;
+using Microsoft.EntityFrameworkCore;
 
 namespace EasyToDo.Models.DAO
 {
+    [EntityTypeConfiguration(typeof(TaskItemDAOConfiguration))]
     public class TaskItemDAO
     {
         public Guid Id { get; set; }
@@ -17,7 +20,7 @@ namespace EasyToDo.Models.DAO
         public DateTime? CompletedAt { get; set; }
         public bool IsDeleted { get; set; } = false;
         public DateTime? DeletedAt { get; set; }
-        public DateTime? CreatedAt { get; }
+        public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
         public TaskListDAO TaskList { get; set; } = null!;
