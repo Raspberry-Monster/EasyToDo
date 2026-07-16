@@ -54,7 +54,6 @@ namespace EasyToDo.Services
             if (user == null) return new ApiResponse<object> { Success = false, Message = "User Not Found" };
             user.NickName = request.Nickname;
             user.UpdatedAt = DateTime.UtcNow;
-            _repository.Users.Update(user);
             await _repository.SaveChangesAsync();
             return new ApiResponse<object> { Success = true, Message = "Profile Updated Successfully" };
         }
@@ -67,7 +66,6 @@ namespace EasyToDo.Services
             if (passwordVerificationResult == PasswordVerificationResult.Failed) return new ApiResponse<object> { Success = false, Message = "Invalid Old Password" };
             user.PasswordHash = _passwordHasher.HashPassword(user, request.NewPassword);
             user.UpdatedAt = DateTime.UtcNow;
-            _repository.Users.Update(user);
             await _repository.SaveChangesAsync();
             return new ApiResponse<object> { Success = true, Message = "Password Changed Successfully" };
         }

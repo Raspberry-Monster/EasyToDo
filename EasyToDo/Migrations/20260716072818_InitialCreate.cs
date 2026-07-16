@@ -35,6 +35,8 @@ namespace EasyToDo.Migrations
                     Name = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
                     OwnerId = table.Column<Guid>(type: "uuid", nullable: false),
                     Color = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true, defaultValueSql: "CURRENT_TIMESTAMP"),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true, defaultValueSql: "CURRENT_TIMESTAMP")
                 },
@@ -55,9 +57,10 @@ namespace EasyToDo.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     ListId = table.Column<Guid>(type: "uuid", nullable: false),
-                    ParentTaskId = table.Column<Guid>(type: "uuid", nullable: true),
-                    Title = table.Column<string>(type: "text", nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: true),
+                    OwnerId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ParentTaskId = table.Column<Guid>(type: "uuid", maxLength: 50, nullable: true),
+                    Title = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    Description = table.Column<string>(type: "TEXT", nullable: false),
                     Status = table.Column<int>(type: "integer", nullable: false),
                     Priority = table.Column<int>(type: "integer", nullable: false),
                     Progress = table.Column<int>(type: "integer", nullable: false),
@@ -76,11 +79,18 @@ namespace EasyToDo.Migrations
                         name: "FK_TaskItems_TaskItems_ParentTaskId",
                         column: x => x.ParentTaskId,
                         principalTable: "TaskItems",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_TaskItems_TaskLists_ListId",
                         column: x => x.ListId,
                         principalTable: "TaskLists",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TaskItems_Users_OwnerId",
+                        column: x => x.OwnerId,
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -89,6 +99,11 @@ namespace EasyToDo.Migrations
                 name: "IX_TaskItems_ListId",
                 table: "TaskItems",
                 column: "ListId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TaskItems_OwnerId",
+                table: "TaskItems",
+                column: "OwnerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TaskItems_ParentTaskId",

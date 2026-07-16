@@ -9,6 +9,7 @@ namespace EasyToDo.Models.DAO
     {
         public Guid Id { get; set; }
         public required Guid ListId { get; set; }
+        public required Guid OwnerId { get; set; }
         public Guid? ParentTaskId { get; set; }
         public required string Title { get; set; }
         public string? Description { get; set; }
@@ -23,7 +24,9 @@ namespace EasyToDo.Models.DAO
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
+        public UserDAO Owner { get; set; } = null!;
         public TaskListDAO TaskList { get; set; } = null!;
         public TaskItemDAO? ParentTask { get; set; }
+        public List<TaskItemDAO> SubTasks { get; set; } = [];
     }
 }

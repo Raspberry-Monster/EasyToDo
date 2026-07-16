@@ -71,6 +71,7 @@ namespace EasyToDo
             });
             builder.Services.AddScoped<JwtTokenService>();
             builder.Services.AddScoped<UserService>();
+            builder.Services.AddScoped<TaskListService>();
             builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
             builder.Services.AddProblemDetails();
 

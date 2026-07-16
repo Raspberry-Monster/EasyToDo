@@ -10,8 +10,11 @@ namespace EasyToDo.Models.DAO
         public required string Name { get; set; }
         public required Guid OwnerId { get; set; }
         public required string Color { get; set; }
+        public bool IsDeleted { get; set; }
+        public DateTime? DeletedAt { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
+
 
         public UserDAO Owner { get; set; } = null!;
         public List<TaskItemDAO> Items { get; set; } = [];

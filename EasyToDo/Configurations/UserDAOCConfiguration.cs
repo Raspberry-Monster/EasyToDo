@@ -45,6 +45,11 @@ namespace EasyToDo.Configurations
                 .WithOne(taskList => taskList.Owner)
                 .HasForeignKey(taskList => taskList.OwnerId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasMany(user => user.TaskItems)
+                .WithOne(taskItem => taskItem.Owner)
+                .HasForeignKey(taskItem => taskItem.OwnerId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

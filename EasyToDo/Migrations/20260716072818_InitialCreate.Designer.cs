@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EasyToDo.Migrations
 {
     [DbContext(typeof(EasyToDoDbContext))]
-    [Migration("20260715080357_InitialCreate")]
+    [Migration("20260716072818_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -33,7 +33,8 @@ namespace EasyToDo.Migrations
                         .HasColumnName("Id");
 
                     b.Property<DateTime?>("CompletedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("CompletedAt");
 
                     b.Property<DateTime?>("CreatedAt")
                         .ValueGeneratedOnAdd()
@@ -42,38 +43,54 @@ namespace EasyToDo.Migrations
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("DeletedAt");
 
                     b.Property<string>("Description")
-                        .HasColumnType("text");
+                        .IsRequired()
+                        .HasColumnType("TEXT")
+                        .HasColumnName("Description");
 
                     b.Property<DateTime?>("DueAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("DueAt");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("IsDeleted");
 
                     b.Property<Guid>("ListId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("ParentTaskId")
+                    b.Property<Guid>("OwnerId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("ParentTaskId")
+                        .HasMaxLength(50)
+                        .HasColumnType("uuid")
+                        .HasColumnName("ParentTaskId");
+
                     b.Property<int>("Priority")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("Priority");
 
                     b.Property<int>("Progress")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("Progress");
 
                     b.Property<DateTime?>("StartAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("StartAt");
 
                     b.Property<int>("Status")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("Status");
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("Title");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .ValueGeneratedOnAdd()
@@ -84,6 +101,8 @@ namespace EasyToDo.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ListId");
+
+                    b.HasIndex("OwnerId");
 
                     b.HasIndex("ParentTaskId");
 
@@ -108,6 +127,14 @@ namespace EasyToDo.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("CreatedAt")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("DeletedAt");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("IsDeleted");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -181,9 +208,18 @@ namespace EasyToDo.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("EasyToDo.Models.DAO.UserDAO", "Owner")
+                        .WithMany("TaskItems")
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("EasyToDo.Models.DAO.TaskItemDAO", "ParentTask")
-                        .WithMany()
-                        .HasForeignKey("ParentTaskId");
+                        .WithMany("SubTasks")
+                        .HasForeignKey("ParentTaskId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("Owner");
 
                     b.Navigation("ParentTask");
 
@@ -201,6 +237,11 @@ namespace EasyToDo.Migrations
                     b.Navigation("Owner");
                 });
 
+            modelBuilder.Entity("EasyToDo.Models.DAO.TaskItemDAO", b =>
+                {
+                    b.Navigation("SubTasks");
+                });
+
             modelBuilder.Entity("EasyToDo.Models.DAO.TaskListDAO", b =>
                 {
                     b.Navigation("Items");
@@ -208,6 +249,8 @@ namespace EasyToDo.Migrations
 
             modelBuilder.Entity("EasyToDo.Models.DAO.UserDAO", b =>
                 {
+                    b.Navigation("TaskItems");
+
                     b.Navigation("TaskLists");
                 });
 #pragma warning restore 612, 618

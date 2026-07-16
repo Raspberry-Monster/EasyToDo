@@ -14,5 +14,6 @@ namespace EasyToDo.Models.DAO
         public DateTime? UpdatedAt { get; set; }
 
         public List<TaskListDAO> TaskLists { get; set; } = [];
+        public List<TaskItemDAO> TaskItems { get; set; } = [];
     }
 }

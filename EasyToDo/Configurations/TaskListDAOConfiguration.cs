@@ -28,6 +28,13 @@ namespace EasyToDo.Configurations
                 .HasMaxLength(128)
                 .HasColumnName("Name");
 
+            builder.Property(t => t.IsDeleted)
+               .HasColumnName("IsDeleted");
+
+            builder.Property(t => t.DeletedAt)
+                .HasColumnType("timestamp with time zone")
+                .HasColumnName("DeletedAt");
+
             builder.Property(t => t.CreatedAt)
                 .ValueGeneratedOnAdd()
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
@@ -49,6 +56,8 @@ namespace EasyToDo.Configurations
                 .WithOne(item => item.TaskList)
                 .HasForeignKey(item => item.ListId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasQueryFilter(t=> !t.IsDeleted);
         }
     }
 }

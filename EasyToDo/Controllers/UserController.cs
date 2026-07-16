@@ -1,8 +1,10 @@
-﻿using EasyToDo.Models.DTO.Requests;
+﻿using EasyToDo.Models;
+using EasyToDo.Models.DTO.Requests;
 using EasyToDo.Models.DTO.Responses;
 using EasyToDo.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.JsonWebTokens;
 
 namespace EasyToDo.Controllers
 {
@@ -15,10 +17,10 @@ namespace EasyToDo.Controllers
 
         [HttpPost("register")]
         [AllowAnonymous]
-        public async Task<ActionResult<object>> RegisterAsync([FromBody] UserRegisterRequest request)
+        public async Task<ActionResult<ApiResponse<object>>> RegisterAsync([FromBody] UserRegisterRequest request)
         {
             var result = await _userService.RegisterAsync(request);
-            if(result.Success)
+            if (result.Success)
             {
                 return Ok(result);
             }
@@ -27,7 +29,7 @@ namespace EasyToDo.Controllers
 
         [HttpPost("login")]
         [AllowAnonymous]
-        public async Task<ActionResult<UserLoginResponse>> LoginAsync([FromBody] UserLoginRequest request)
+        public async Task<ActionResult<ApiResponse<UserLoginResponse>>> LoginAsync([FromBody] UserLoginRequest request)
         {
             var result = await _userService.LoginAsync(request);
             if (result.Success)
@@ -38,15 +40,15 @@ namespace EasyToDo.Controllers
         }
 
         [HttpPost("update")]
-        public async Task<ActionResult<UserLoginResponse>> UpdateUserProfileAsync([FromBody] UserProfileUpdateRequest request)
+        public async Task<ActionResult<ApiResponse<object>>> UpdateUserProfileAsync([FromBody] UserProfileUpdateRequest request)
         {
-            var userId = User.Claims.FirstOrDefault(c => c.Type == "sub");
-            if(string.IsNullOrEmpty(userId?.Value))
+            var userId = User.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub);
+            if (string.IsNullOrEmpty(userId?.Value))
             {
                 return Unauthorized(new { Success = false, Message = "User ID claim is missing." });
             }
             var guidParseStatus = Guid.TryParse(userId.Value, out Guid parsedUserId);
-            if(guidParseStatus == false)
+            if (guidParseStatus == false)
             {
                 return BadRequest(new { Success = false, Message = "Invalid User ID format." });
             }
@@ -55,13 +57,13 @@ namespace EasyToDo.Controllers
             {
                 return Ok(result);
             }
-            return Unauthorized(result);
+            return BadRequest(result);
         }
 
         [HttpPost("password")]
-        public async Task<ActionResult<UserLoginResponse>> ChangePasswordAsync([FromBody] UserChangePasswordRequest request)
+        public async Task<ActionResult<ApiResponse<object>>> ChangePasswordAsync([FromBody] UserChangePasswordRequest request)
         {
-            var userId = User.Claims.FirstOrDefault(c => c.Type == "sub");
+            var userId = User.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub);
             if (string.IsNullOrEmpty(userId?.Value))
             {
                 return Unauthorized(new { Success = false, Message = "User ID claim is missing." });
@@ -76,7 +78,7 @@ namespace EasyToDo.Controllers
             {
                 return Ok(result);
             }
-            return Unauthorized(result);
+            return BadRequest(result);
         }
     }
 }

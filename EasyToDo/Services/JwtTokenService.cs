@@ -53,7 +53,7 @@ namespace EasyToDo.Services
                 TokenType = "JWT"
             };
             var accessToken = _tokenHandler.CreateToken(tokenDescriptor);
-            return new UserLoginResponse { Token = accessToken, Expiration = expiresAt };
+            return new UserLoginResponse(accessToken, expiresAt);
         }
     }
 }
