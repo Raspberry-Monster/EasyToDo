@@ -13,13 +13,12 @@ namespace EasyToDo.Controllers
     [Authorize]
     public class UserController(UserService userService) : ControllerBase
     {
-        private readonly UserService _userService = userService;
-
+        [EndpointDescription("用户注册")]
         [HttpPost("register")]
         [AllowAnonymous]
         public async Task<ActionResult<ApiResponse<object>>> RegisterAsync([FromBody] UserRegisterRequest request)
         {
-            var result = await _userService.RegisterAsync(request);
+            var result = await userService.RegisterAsync(request);
             if (result.Success)
             {
                 return Ok(result);
@@ -31,7 +30,7 @@ namespace EasyToDo.Controllers
         [AllowAnonymous]
         public async Task<ActionResult<ApiResponse<UserLoginResponse>>> LoginAsync([FromBody] UserLoginRequest request)
         {
-            var result = await _userService.LoginAsync(request);
+            var result = await userService.LoginAsync(request);
             if (result.Success)
             {
                 return Ok(result);
@@ -48,11 +47,11 @@ namespace EasyToDo.Controllers
                 return Unauthorized(new { Success = false, Message = "User ID claim is missing." });
             }
             var guidParseStatus = Guid.TryParse(userId.Value, out Guid parsedUserId);
-            if (guidParseStatus == false)
+            if (!guidParseStatus)
             {
                 return BadRequest(new { Success = false, Message = "Invalid User ID format." });
             }
-            var result = await _userService.UpdateUserProfileAsync(request, parsedUserId);
+            var result = await userService.UpdateUserProfileAsync(request, parsedUserId);
             if (result.Success)
             {
                 return Ok(result);
@@ -69,11 +68,11 @@ namespace EasyToDo.Controllers
                 return Unauthorized(new { Success = false, Message = "User ID claim is missing." });
             }
             var guidParseStatus = Guid.TryParse(userId.Value, out Guid parsedUserId);
-            if (guidParseStatus == false)
+            if (!guidParseStatus)
             {
                 return BadRequest(new { Success = false, Message = "Invalid User ID format." });
             }
-            var result = await _userService.ChangePasswordAsync(request, parsedUserId);
+            var result = await userService.ChangePasswordAsync(request, parsedUserId);
             if (result.Success)
             {
                 return Ok(result);

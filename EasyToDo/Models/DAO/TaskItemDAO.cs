@@ -1,6 +1,10 @@
 ﻿using EasyToDo.Configurations;
 using EasyToDo.Models.Enums;
 using Microsoft.EntityFrameworkCore;
+// ReSharper disable PropertyCanBeMadeInitOnly.Global
+// ReSharper disable EntityFramework.ModelValidation.UnlimitedStringLength
+// ReSharper disable InconsistentNaming
+// ReSharper disable EntityFramework.ModelValidation.CircularDependency
 
 namespace EasyToDo.Models.DAO
 {
@@ -15,11 +19,11 @@ namespace EasyToDo.Models.DAO
         public string? Description { get; set; }
         public TaskItemStatus Status { get; set; } = TaskItemStatus.Stopped;
         public TaskItemPriority Priority { get; set; } = TaskItemPriority.Normal;
-        public int Progress { get; set; } = 0;
+        public int Progress { get; set; }
         public DateTime? StartAt { get; set; }
         public DateTime? DueAt { get; set; }
         public DateTime? CompletedAt { get; set; }
-        public bool IsDeleted { get; set; } = false;
+        public bool IsDeleted { get; set; }
         public DateTime? DeletedAt { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }

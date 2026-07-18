@@ -10,15 +10,14 @@ namespace EasyToDo.Services
     public sealed class JwtTokenService
     {
         private readonly JWTServiceConfiguration _configuration;
-        private readonly SymmetricSecurityKey _securityKey;
         private readonly SigningCredentials _signingCredential;
         private readonly JsonWebTokenHandler _tokenHandler = new();
 
         public JwtTokenService(JWTServiceConfiguration configuration)
         {
             _configuration = configuration;
-            _securityKey = new(configuration.SecurityKey);
-            _signingCredential = new(_securityKey, SecurityAlgorithms.HmacSha256);
+            SymmetricSecurityKey securityKey = new(configuration.SecurityKey);
+            _signingCredential = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
         }
 
         public UserLoginResponse GenerateResponse(UserDAO user)

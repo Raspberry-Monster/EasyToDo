@@ -14,8 +14,13 @@ namespace EasyToDo.Configurations
             builder.Property(t => t.Id)
                 .HasColumnName("Id");
 
+            builder.Property(t => t.ListId)
+                .HasColumnName("ListId");
+
+            builder.Property(t => t.OwnerId)
+                .HasColumnName("OwnerId");
+
             builder.Property(t => t.ParentTaskId)
-                .HasMaxLength(50)
                 .HasColumnName("ParentTaskId");
 
             builder.Property(t => t.Title)
@@ -24,7 +29,6 @@ namespace EasyToDo.Configurations
                 .HasColumnName("Title");
 
             builder.Property(t => t.Description)
-                .IsRequired()
                 .HasColumnType("TEXT")
                 .HasColumnName("Description");
 

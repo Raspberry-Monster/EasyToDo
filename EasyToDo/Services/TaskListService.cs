@@ -9,8 +9,6 @@ namespace EasyToDo.Services
 {
     public sealed class TaskListService(EasyToDoDbContext repository)
     {
-        private readonly EasyToDoDbContext _repository = repository;
-
         public async Task<ApiResponse<List<TaskListResponse>>> CreateTaskListAsync(TaskListCreateRequest request, Guid userId)
         {
             var taskList = new TaskListDAO()
@@ -19,9 +17,9 @@ namespace EasyToDo.Services
                 Name = request.Name,
                 OwnerId = userId
             };
-            _repository.TaskLists.Add(taskList);
-            await _repository.SaveChangesAsync();
-            var taskLists = await _repository.TaskLists
+            repository.TaskLists.Add(taskList);
+            await repository.SaveChangesAsync();
+            var taskLists = await repository.TaskLists
                 .AsNoTracking()
                 .Where(t=>t.OwnerId == userId)
                 .Select(list => new TaskListResponse(list.Id.ToString(), list.Name, list.Color))
@@ -36,15 +34,15 @@ namespace EasyToDo.Services
             {
                 return new ApiResponse<List<TaskListResponse>>() { Success = false, Message = "Invalid TaskList ID format." };
             }
-            var taskList = await _repository.TaskLists.SingleOrDefaultAsync(t => t.Id == taskListId && t.OwnerId == userId);
+            var taskList = await repository.TaskLists.SingleOrDefaultAsync(t => t.Id == taskListId && t.OwnerId == userId);
             if (taskList == null)
             {
                 return new ApiResponse<List<TaskListResponse>>() { Success = false, Message = "TaskList not found." };
             }
             taskList.Name = request.Name;
             taskList.Color = request.Color;
-            await _repository.SaveChangesAsync();
-            var taskLists = await _repository.TaskLists
+            await repository.SaveChangesAsync();
+            var taskLists = await repository.TaskLists
                 .AsNoTracking()
                 .Where(t => t.OwnerId == userId)
                 .Select(list => new TaskListResponse(list.Id.ToString(), list.Name, list.Color))
@@ -59,15 +57,15 @@ namespace EasyToDo.Services
             {
                 return new ApiResponse<List<TaskListResponse>>() { Success = false, Message = "Invalid TaskList ID format." };
             }
-            var taskList = await _repository.TaskLists.SingleOrDefaultAsync(t => t.Id == taskListId && t.OwnerId == userId);
+            var taskList = await repository.TaskLists.SingleOrDefaultAsync(t => t.Id == taskListId && t.OwnerId == userId);
             if (taskList == null)
             {
                 return new ApiResponse<List<TaskListResponse>>() { Success = false, Message = "TaskList not found." };
             }
             taskList.DeletedAt = DateTime.UtcNow;
             taskList.IsDeleted = true;
-            await _repository.SaveChangesAsync();
-            var taskLists = await _repository.TaskLists
+            await repository.SaveChangesAsync();
+            var taskLists = await repository.TaskLists
                 .AsNoTracking()
                 .Where(t => t.OwnerId == userId && !t.IsDeleted)
                 .Select(list => new TaskListResponse(list.Id.ToString(), list.Name, list.Color))
@@ -82,15 +80,15 @@ namespace EasyToDo.Services
             {
                 return new ApiResponse<List<TaskListResponse>>() { Success = false, Message = "Invalid TaskList ID format." };
             }
-            var taskList = await _repository.TaskLists.IgnoreQueryFilters().SingleOrDefaultAsync(t => t.Id == taskListId && t.OwnerId == userId);
+            var taskList = await repository.TaskLists.IgnoreQueryFilters().SingleOrDefaultAsync(t => t.Id == taskListId && t.OwnerId == userId);
             if (taskList == null)
             {
                 return new ApiResponse<List<TaskListResponse>>() { Success = false, Message = "TaskList not found." };
             }
             taskList.DeletedAt = null;
             taskList.IsDeleted = false;
-            await _repository.SaveChangesAsync();
-            var taskLists = await _repository.TaskLists
+            await repository.SaveChangesAsync();
+            var taskLists = await repository.TaskLists
                 .AsNoTracking()
                 .Where(t => t.OwnerId == userId && !t.IsDeleted)
                 .Select(list => new TaskListResponse(list.Id.ToString(), list.Name, list.Color))
@@ -105,7 +103,7 @@ namespace EasyToDo.Services
             {
                 return new ApiResponse<List<TaskListResponse>>() { Success = false, Message = "Invalid TaskList ID format." };
             }
-            var taskList = await _repository.TaskLists.IgnoreQueryFilters().SingleOrDefaultAsync(t => t.Id == taskListId && t.OwnerId == userId);
+            var taskList = await repository.TaskLists.IgnoreQueryFilters().SingleOrDefaultAsync(t => t.Id == taskListId && t.OwnerId == userId);
             if (taskList == null)
             {
                 return new ApiResponse<List<TaskListResponse>>() { Success = false, Message = "TaskList not found." };
@@ -114,9 +112,9 @@ namespace EasyToDo.Services
             {
                 return new ApiResponse<List<TaskListResponse>>() { Success = false, Message = "TaskList hasn't been marked as deleted." };
             }
-            _repository.TaskLists.Remove(taskList);
-            await _repository.SaveChangesAsync();
-            var taskLists = await _repository.TaskLists
+            repository.TaskLists.Remove(taskList);
+            await repository.SaveChangesAsync();
+            var taskLists = await repository.TaskLists
                 .AsNoTracking()
                 .Where(t => t.OwnerId == userId && !t.IsDeleted)
                 .Select(list => new TaskListResponse(list.Id.ToString(), list.Name, list.Color))

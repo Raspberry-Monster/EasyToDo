@@ -1,5 +1,9 @@
 ﻿using EasyToDo.Configurations;
 using Microsoft.EntityFrameworkCore;
+// ReSharper disable PropertyCanBeMadeInitOnly.Global
+// ReSharper disable EntityFramework.ModelValidation.UnlimitedStringLength
+// ReSharper disable InconsistentNaming
+// ReSharper disable EntityFramework.ModelValidation.CircularDependency
 
 namespace EasyToDo.Models.DAO
 {

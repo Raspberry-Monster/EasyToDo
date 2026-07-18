@@ -2,5 +2,5 @@
 
 namespace EasyToDo.Models.DTO.Responses
 {
-    public record TaskItemResponse(string Title, TaskItemStatus Status, TaskItemPriority Priority, int Progress, DateTime StartAt, DateTime DueAt);
+    public record TaskItemResponse(string Id, string Title, TaskItemStatus Status, TaskItemPriority Priority, int Progress, DateTime? StartAt, DateTime? DueAt);
 }

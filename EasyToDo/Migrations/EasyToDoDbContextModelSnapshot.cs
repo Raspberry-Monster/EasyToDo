@@ -44,7 +44,6 @@ namespace EasyToDo.Migrations
                         .HasColumnName("DeletedAt");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("TEXT")
                         .HasColumnName("Description");
 
@@ -57,13 +56,14 @@ namespace EasyToDo.Migrations
                         .HasColumnName("IsDeleted");
 
                     b.Property<Guid>("ListId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("ListId");
 
                     b.Property<Guid>("OwnerId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("OwnerId");
 
                     b.Property<Guid?>("ParentTaskId")
-                        .HasMaxLength(50)
                         .HasColumnType("uuid")
                         .HasColumnName("ParentTaskId");
 
