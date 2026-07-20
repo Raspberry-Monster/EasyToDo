@@ -1,14 +1,14 @@
-﻿using EasyToDo.Models;
+using EasyToDo.Models;
 using EasyToDo.Models.DTO.Requests;
 using EasyToDo.Models.DTO.Responses;
 using EasyToDo.Services;
+using EasyToDo.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.JsonWebTokens;
 
 namespace EasyToDo.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/user")]
     [ApiController]
     [Authorize]
     public class UserController(UserService userService) : ControllerBase
@@ -16,68 +16,24 @@ namespace EasyToDo.Controllers
         [EndpointDescription("用户注册")]
         [HttpPost("register")]
         [AllowAnonymous]
-        public async Task<ActionResult<ApiResponse<object>>> RegisterAsync([FromBody] UserRegisterRequest request)
-        {
-            var result = await userService.RegisterAsync(request);
-            if (result.Success)
-            {
-                return Ok(result);
-            }
-            return BadRequest(result);
-        }
+        public async Task<ActionResult<ApiResponse<object>>> RegisterAsync([FromBody] UserRegisterRequest request) => this.ToActionResult(await userService.RegisterAsync(request));
 
         [HttpPost("login")]
         [AllowAnonymous]
-        public async Task<ActionResult<ApiResponse<UserLoginResponse>>> LoginAsync([FromBody] UserLoginRequest request)
-        {
-            var result = await userService.LoginAsync(request);
-            if (result.Success)
-            {
-                return Ok(result);
-            }
-            return BadRequest(result);
-        }
+        public async Task<ActionResult<ApiResponse<UserLoginResponse>>> LoginAsync([FromBody] UserLoginRequest request) => this.ToActionResult(await userService.LoginAsync(request));
 
         [HttpPost("update")]
         public async Task<ActionResult<ApiResponse<object>>> UpdateUserProfileAsync([FromBody] UserProfileUpdateRequest request)
         {
-            var userId = User.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub);
-            if (string.IsNullOrEmpty(userId?.Value))
-            {
-                return Unauthorized(new { Success = false, Message = "User ID claim is missing." });
-            }
-            var guidParseStatus = Guid.TryParse(userId.Value, out Guid parsedUserId);
-            if (!guidParseStatus)
-            {
-                return BadRequest(new { Success = false, Message = "Invalid User ID format." });
-            }
-            var result = await userService.UpdateUserProfileAsync(request, parsedUserId);
-            if (result.Success)
-            {
-                return Ok(result);
-            }
-            return BadRequest(result);
+            if (this.GetUserId(out var userId) is { } error) return error;
+            return this.ToActionResult(await userService.UpdateUserProfileAsync(request, userId));
         }
 
         [HttpPost("password")]
         public async Task<ActionResult<ApiResponse<object>>> ChangePasswordAsync([FromBody] UserChangePasswordRequest request)
         {
-            var userId = User.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub);
-            if (string.IsNullOrEmpty(userId?.Value))
-            {
-                return Unauthorized(new { Success = false, Message = "User ID claim is missing." });
-            }
-            var guidParseStatus = Guid.TryParse(userId.Value, out Guid parsedUserId);
-            if (!guidParseStatus)
-            {
-                return BadRequest(new { Success = false, Message = "Invalid User ID format." });
-            }
-            var result = await userService.ChangePasswordAsync(request, parsedUserId);
-            if (result.Success)
-            {
-                return Ok(result);
-            }
-            return BadRequest(result);
+            if (this.GetUserId(out var userId) is { } error) return error;
+            return this.ToActionResult(await userService.ChangePasswordAsync(request, userId));
         }
     }
 }

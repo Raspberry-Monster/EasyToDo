@@ -7,33 +7,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ee448341-3c2b-4348-ad20-dd5405488222" name="更改" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.EasyToDo/.idea/indexLayout.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.EasyToDo/.idea/projectSettingsUpdater.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.EasyToDo/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.EasyToDo/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/EasyToDo/Controllers/TaskItemController.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/EasyToDo/Models/DTO/Requests/TaskItemCreateRequest.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/EasyToDo/Models/DTO/Responses/TaskItemDetailResponse.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/EasyToDo/Properties/PublishProfiles/LinuxPublishProfile.pubxml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/EasyToDo/Services/TaskItemService.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/EasyToDo/dotnet-tools.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/EasyToDo/Configurations/TaskItemDAOConfiguration.cs" beforeDir="false" afterPath="$PROJECT_DIR$/EasyToDo/Configurations/TaskItemDAOConfiguration.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.EasyToDo/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.EasyToDo/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/EasyToDo/Controllers/TaskItemController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/EasyToDo/Controllers/TaskItemController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/EasyToDo/Controllers/TaskListController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/EasyToDo/Controllers/TaskListController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/EasyToDo/Controllers/UserController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/EasyToDo/Controllers/UserController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/EasyToDo/Migrations/20260716072818_InitialCreate.Designer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/EasyToDo/Migrations/20260717084217_InitialCreate.Designer.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/EasyToDo/Migrations/20260716072818_InitialCreate.cs" beforeDir="false" afterPath="$PROJECT_DIR$/EasyToDo/Migrations/20260717084217_InitialCreate.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/EasyToDo/Migrations/EasyToDoDbContextModelSnapshot.cs" beforeDir="false" afterPath="$PROJECT_DIR$/EasyToDo/Migrations/EasyToDoDbContextModelSnapshot.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/EasyToDo/Models/DAO/TaskItemDAO.cs" beforeDir="false" afterPath="$PROJECT_DIR$/EasyToDo/Models/DAO/TaskItemDAO.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/EasyToDo/Models/DAO/TaskListDAO.cs" beforeDir="false" afterPath="$PROJECT_DIR$/EasyToDo/Models/DAO/TaskListDAO.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/EasyToDo/Models/DAO/UserDAO.cs" beforeDir="false" afterPath="$PROJECT_DIR$/EasyToDo/Models/DAO/UserDAO.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/EasyToDo/Models/DTO/Responses/TaskItemResponse.cs" beforeDir="false" afterPath="$PROJECT_DIR$/EasyToDo/Models/DTO/Responses/TaskItemResponse.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/EasyToDo/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/EasyToDo/Program.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/EasyToDo/Services/Database/EasyToDoDbContext.cs" beforeDir="false" afterPath="$PROJECT_DIR$/EasyToDo/Services/Database/EasyToDoDbContext.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/EasyToDo/Services/GlobalExceptionHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/EasyToDo/Services/GlobalExceptionHandler.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/EasyToDo/Services/JwtTokenService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/EasyToDo/Services/JwtTokenService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/EasyToDo/EasyToDo.http" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EasyToDo/Models/DTO/Requests/TaskItemCreateRequest.cs" beforeDir="false" afterPath="$PROJECT_DIR$/EasyToDo/Models/DTO/Requests/TaskItemCreateRequest.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/EasyToDo/Models/DTO/Requests/TaskListDeleteRequest.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EasyToDo/Models/DTO/Requests/TaskListUpdateRequest.cs" beforeDir="false" afterPath="$PROJECT_DIR$/EasyToDo/Models/DTO/Requests/TaskListUpdateRequest.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/EasyToDo/Services/TaskItemService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/EasyToDo/Services/TaskItemService.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/EasyToDo/Services/TaskListService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/EasyToDo/Services/TaskListService.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/EasyToDo/Services/UserService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/EasyToDo/Services/UserService.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/EasyToDo/appsettings.example.json" beforeDir="false" afterPath="$PROJECT_DIR$/EasyToDo/appsettings.example.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -58,23 +42,23 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    ".NET 启动设置配置文件.EasyToDo: http.executor": "Debug",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.cidr.known.project.marker": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.readMode.enableVisualFormatting": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "cidr.known.project.marker": "true",
-    "codeWithMe.voiceChat.enabledByDefault": "false",
-    "git-widget-placeholder": "master",
-    "ignore.virus.scanning.warn.message": "true",
-    "settings.editor.selected.configurable": "preferences.keymap",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;.NET 启动设置配置文件.EasyToDo: http.executor&quot;: &quot;Debug&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.keymap&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected=".NET 启动设置配置文件.EasyToDo: http">
     <configuration name="EasyToDo: LinuxPublishProfile" type="DotNetMsBuildPublish" factoryName="Publish to IIS">
       <riderPublish configuration="Release" platform="Any CPU" publish_profile="LinuxPublishProfile.pubxml" pubxml_path="$PROJECT_DIR$/EasyToDo/Properties/PublishProfiles/LinuxPublishProfile.pubxml" uuid_high="4720795733272511319" uuid_low="54577858099145699" />
@@ -123,7 +107,8 @@
       <workItem from="1784255425840" duration="166000" />
       <workItem from="1784255798539" duration="5376000" />
       <workItem from="1784270793608" duration="872000" />
-      <workItem from="1784348261395" duration="2165000" />
+      <workItem from="1784348261395" duration="3103000" />
+      <workItem from="1784509922892" duration="5353000" />
     </task>
     <servers />
   </component>

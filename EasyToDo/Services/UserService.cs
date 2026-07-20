@@ -3,6 +3,7 @@ using EasyToDo.Models.DAO;
 using EasyToDo.Models.DTO.Requests;
 using EasyToDo.Models.DTO.Responses;
 using EasyToDo.Services.Database;
+using EasyToDo.Utilities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,13 +14,13 @@ namespace EasyToDo.Services
         public async Task<ApiResponse<UserLoginResponse>> LoginAsync(UserLoginRequest request)
         {
             var user = await repository.Users.FirstOrDefaultAsync(u => u.UserName == request.Username);
-            if (user == null) return new ApiResponse<UserLoginResponse> { Success = false, Message = "User Not Found" };
+            if (user == null) return ApiResponseFactory.Failure<UserLoginResponse>("User Not Found");
             var passwordVerificationResult = passwordHasher.VerifyHashedPassword(user, user.PasswordHash!, request.Password);
             // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
             switch (passwordVerificationResult)
             {
                 case PasswordVerificationResult.Failed:
-                    return new ApiResponse<UserLoginResponse> { Success = false, Message = "Invalid Password" };
+                    return ApiResponseFactory.Failure<UserLoginResponse>("Invalid Password");
                 case PasswordVerificationResult.SuccessRehashNeeded:
                     user.PasswordHash = passwordHasher.HashPassword(user, request.Password);
                     repository.Users.Update(user);
@@ -27,14 +28,13 @@ namespace EasyToDo.Services
                     break;
             }
 
-            var loginResponse = jwtTokenService.GenerateResponse(user);
-            return new ApiResponse<UserLoginResponse> { Success = true, Message = "Login Successful", Data = loginResponse };
+            return ApiResponseFactory.Success(ToResponse(user), "Login Successful");
         }
 
         public async Task<ApiResponse<object>> RegisterAsync(UserRegisterRequest request)
         {
             var userExists = await repository.Users.AnyAsync(u => u.UserName == request.Username);
-            if (userExists) return new ApiResponse<object> { Success = false, Message = "User Already Exists" };
+            if (userExists) return ApiResponseFactory.Failure<object>("User Already Exists");
             var user = new UserDAO
             {
                 UserName = request.Username,
@@ -43,29 +43,31 @@ namespace EasyToDo.Services
             user.PasswordHash = passwordHasher.HashPassword(user, request.Password);
             repository.Users.Add(user);
             await repository.SaveChangesAsync();
-            return new ApiResponse<object> { Success = true, Message = "Registration Successful" };
+            return ApiResponseFactory.Success<object>(null, "Registration Successful");
         }
 
         public async Task<ApiResponse<object>> UpdateUserProfileAsync(UserProfileUpdateRequest request, Guid userId)
         {
             var user = await repository.Users.FindAsync(userId);
-            if (user == null) return new ApiResponse<object> { Success = false, Message = "User Not Found" };
+            if (user == null) return ApiResponseFactory.Failure<object>("User Not Found");
             user.NickName = request.Nickname;
             user.UpdatedAt = DateTime.UtcNow;
             await repository.SaveChangesAsync();
-            return new ApiResponse<object> { Success = true, Message = "Profile Updated Successfully" };
+            return ApiResponseFactory.Success<object>(null, "Profile Updated Successfully");
         }
 
         public async Task<ApiResponse<object>> ChangePasswordAsync(UserChangePasswordRequest request, Guid userId)
         {
             var user = await repository.Users.FindAsync(userId);
-            if (user == null) return new ApiResponse<object> { Success = false, Message = "User Not Found" };
+            if (user == null) return ApiResponseFactory.Failure<object>("User Not Found");
             var passwordVerificationResult = passwordHasher.VerifyHashedPassword(user, user.PasswordHash!, request.OldPassword);
-            if (passwordVerificationResult == PasswordVerificationResult.Failed) return new ApiResponse<object> { Success = false, Message = "Invalid Old Password" };
+            if (passwordVerificationResult == PasswordVerificationResult.Failed) return ApiResponseFactory.Failure<object>("Invalid Old Password");
             user.PasswordHash = passwordHasher.HashPassword(user, request.NewPassword);
             user.UpdatedAt = DateTime.UtcNow;
             await repository.SaveChangesAsync();
-            return new ApiResponse<object> { Success = true, Message = "Password Changed Successfully" };
+            return ApiResponseFactory.Success<object>(null, "Password Changed Successfully");
         }
+
+        private UserLoginResponse ToResponse(UserDAO user) => jwtTokenService.GenerateResponse(user);
     }
 }
