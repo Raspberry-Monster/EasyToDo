@@ -1,10 +1,14 @@
 
 using EasyToDo.Configurations;
+using EasyToDo.Filters;
 using EasyToDo.Models.DAO;
 using EasyToDo.Services;
 using EasyToDo.Services.Database;
+using EasyToDo.Validators;
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
@@ -20,7 +24,21 @@ namespace EasyToDo
 
             // Add services to the container.
 
-            builder.Services.AddControllers();
+            builder.Services.AddControllers(options => options.Filters.Add<ValidationFilter>());
+            builder.Services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.InvalidModelStateResponseFactory = context => new BadRequestObjectResult(new Models.ApiResponse<Dictionary<string, string[]>>
+                {
+                    Success = false,
+                    Message = "Request validation failed.",
+                    Data = context.ModelState
+                        .Where(entry => entry.Value?.Errors.Count > 0)
+                        .ToDictionary(
+                            entry => entry.Key,
+                            entry => entry.Value!.Errors.Select(error => error.ErrorMessage).ToArray())
+                });
+            });
+            builder.Services.AddValidatorsFromAssemblyContaining<TaskItemCreateRequestValidator>();
             var jwtIssuer = builder.Configuration["Jwt:Issuer"] ?? throw new InvalidOperationException("Jwt:Issuer 未配置");
             var jwtAudience = builder.Configuration["Jwt:Audience"] ?? throw new InvalidOperationException("Jwt:Audience 未配置");
             var jwtKey = builder.Configuration["Jwt:Key"] ?? throw new InvalidOperationException("Jwt:Key 未配置");

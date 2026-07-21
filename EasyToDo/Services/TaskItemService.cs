@@ -17,7 +17,7 @@ namespace EasyToDo.Services
             return new ApiResponse<List<TaskItemResponse>>() { Data = tasks, Message = "Tasks retrieved successfully.", Success = true };
         }
 
-        public async Task<ApiResponse<TaskItemDetailResponse>> GetTaskAsync(string id, Guid userId)
+        public async Task<ApiResponse<TaskItemDetailResponse>> GetTaskAsync(Guid id, Guid userId)
         {
             var task = await FindTaskAsync(id, userId, parentTaskId: false);
             return task == null
@@ -27,10 +27,7 @@ namespace EasyToDo.Services
 
         public async Task<ApiResponse<List<TaskItemResponse>>> CreateTaskAsync(TaskItemCreateRequest request, Guid userId)
         {
-            if (!Guid.TryParse(request.ListId, out var listId))
-            {
-                return Failure<List<TaskItemResponse>>("Invalid TaskList ID format.");
-            }
+            var listId = request.ListId!.Value;
 
             if (!await repository.TaskLists.AnyAsync(list => list.Id == listId && list.OwnerId == userId))
             {
@@ -52,7 +49,7 @@ namespace EasyToDo.Services
             return Success(tasks, "Task created successfully.");
         }
 
-        public async Task<ApiResponse<TaskItemDetailResponse>> UpdateTaskAsync(string id, TaskItemUpdateRequest request, Guid userId)
+        public async Task<ApiResponse<TaskItemDetailResponse>> UpdateTaskAsync(Guid id, TaskItemUpdateRequest request, Guid userId)
         {
             var task = await FindTaskAsync(id, userId, parentTaskId: false);
             if (task == null)
@@ -63,45 +60,57 @@ namespace EasyToDo.Services
             return await UpdateTaskItemAsync(task, request, userId);
         }
 
-        public async Task<ApiResponse<TaskItemDetailResponse>> UpdateTaskStatusAsync(string id, TaskItemStatusUpdateRequest request, Guid userId, bool isSubTask)
+        public async Task<ApiResponse<TaskItemDetailResponse>> UpdateTaskStatusAsync(Guid id, TaskItemStatusUpdateRequest request, Guid userId, bool isSubTask)
         {
-            var task = await FindTaskAsync(id, userId, isSubTask ? true : null);
+            var task = await FindTaskAsync(id, userId, isSubTask);
             if (task == null)
             {
                 return Failure<TaskItemDetailResponse>(isSubTask ? "Subtask not found." : "Task not found.");
             }
 
-            task.Status = request.Status;
-            task.CompletedAt = request.Status == TaskItemStatus.Completed ? DateTime.UtcNow : null;
-            if (request.Status == TaskItemStatus.Completed)
+            var wasCompleted = task.Status == TaskItemStatus.Completed;
+            var status = request.Status!.Value;
+            task.Status = status;
+            task.CompletedAt = status == TaskItemStatus.Completed ? task.CompletedAt ?? DateTime.UtcNow : null;
+            if (status == TaskItemStatus.Completed)
             {
                 task.Progress = 100;
+            }
+            else if (wasCompleted)
+            {
+                task.Progress = 0;
             }
             task.UpdatedAt = DateTime.UtcNow;
             await repository.SaveChangesAsync();
             return Success(ToDetailResponse(task), "Task status updated successfully.");
         }
 
-        public async Task<ApiResponse<TaskItemDetailResponse>> UpdateTaskProgressAsync(string id, TaskItemProgressUpdateRequest request, Guid userId)
+        public async Task<ApiResponse<TaskItemDetailResponse>> UpdateTaskProgressAsync(Guid id, TaskItemProgressUpdateRequest request, Guid userId)
         {
-            if (request.Progress is < 0 or > 100)
-            {
-                return Failure<TaskItemDetailResponse>("Progress must be between 0 and 100.");
-            }
-
             var task = await FindTaskAsync(id, userId, parentTaskId: false);
             if (task == null)
             {
                 return Failure<TaskItemDetailResponse>("Task not found.");
             }
 
-            task.Progress = request.Progress;
+            var progress = request.Progress!.Value;
+            task.Progress = progress;
+            if (progress == 100)
+            {
+                task.Status = TaskItemStatus.Completed;
+                task.CompletedAt ??= DateTime.UtcNow;
+            }
+            else if (task.Status == TaskItemStatus.Completed)
+            {
+                task.Status = TaskItemStatus.Processing;
+                task.CompletedAt = null;
+            }
             task.UpdatedAt = DateTime.UtcNow;
             await repository.SaveChangesAsync();
             return Success(ToDetailResponse(task), "Task progress updated successfully.");
         }
 
-        public async Task<ApiResponse<List<TaskItemResponse>>> MarkDeleteTaskAsync(string id, Guid userId)
+        public async Task<ApiResponse<List<TaskItemResponse>>> MarkDeleteTaskAsync(Guid id, Guid userId)
         {
             var task = await FindTaskAsync(id, userId, parentTaskId: false);
             if (task == null)
@@ -114,7 +123,7 @@ namespace EasyToDo.Services
             return Success(tasks, "Task moved to recycle bin successfully.");
         }
 
-        public async Task<ApiResponse<List<TaskItemResponse>>> UnmarkDeleteTaskAsync(string id, Guid userId)
+        public async Task<ApiResponse<List<TaskItemResponse>>> UnmarkDeleteTaskAsync(Guid id, Guid userId)
         {
             var task = await FindTaskAsync(id, userId, parentTaskId: false, ignoreQueryFilters: true);
             if (task == null || !task.IsDeleted)
@@ -127,7 +136,7 @@ namespace EasyToDo.Services
             return Success(tasks, "Task restored successfully.");
         }
 
-        public async Task<ApiResponse<List<TaskItemResponse>>> DeleteTaskAsync(string id, Guid userId)
+        public async Task<ApiResponse<List<TaskItemResponse>>> DeleteTaskAsync(Guid id, Guid userId)
         {
             var task = await FindTaskAsync(id, userId, parentTaskId: false, ignoreQueryFilters: true);
             if (task == null)
@@ -156,7 +165,7 @@ namespace EasyToDo.Services
             var tasks = await repository.TaskItems
                 .IgnoreQueryFilters()
                 .AsNoTracking()
-                .Where(task => task.OwnerId == userId && task.ParentTaskId == null && task.IsDeleted)
+                .Where(task => task.OwnerId == userId && !task.TaskList.IsDeleted && task.ParentTaskId == null && task.IsDeleted)
                 .OrderByDescending(task => task.DeletedAt)
                 .Select(task => ToResponse(task))
                 .ToListAsync();
@@ -165,11 +174,6 @@ namespace EasyToDo.Services
 
         public async Task<ApiResponse<List<TaskItemResponse>>> GetCalendarTasksAsync(DateTime startAt, DateTime endAt, Guid userId)
         {
-            if (startAt > endAt)
-            {
-                return Failure<List<TaskItemResponse>>("The start date must be earlier than or equal to the end date.");
-            }
-
             var tasks = await GetTaskResponsesAsync(userId, task =>
                 task.ParentTaskId == null &&
                 ((task.StartAt != null && task.StartAt <= endAt && (task.DueAt == null || task.DueAt >= startAt)) ||
@@ -177,28 +181,20 @@ namespace EasyToDo.Services
             return Success(tasks, "Calendar tasks retrieved successfully.");
         }
 
-        public async Task<ApiResponse<List<TaskItemResponse>>> GetSubTasksAsync(string taskId, Guid userId)
+        public async Task<ApiResponse<List<TaskItemResponse>>> GetSubTasksAsync(Guid taskId, Guid userId)
         {
-            if (!Guid.TryParse(taskId, out var parentTaskId))
-            {
-                return Failure<List<TaskItemResponse>>("Invalid task ID format.");
-            }
-            if (!await repository.TaskItems.AnyAsync(task => task.Id == parentTaskId && task.OwnerId == userId && task.ParentTaskId == null))
+            if (!await repository.TaskItems.AnyAsync(task => task.Id == taskId && task.OwnerId == userId && !task.TaskList.IsDeleted && task.ParentTaskId == null))
             {
                 return Failure<List<TaskItemResponse>>("Task not found.");
             }
 
-            var subTasks = await GetTaskResponsesAsync(userId, task => task.ParentTaskId == parentTaskId);
+            var subTasks = await GetTaskResponsesAsync(userId, task => task.ParentTaskId == taskId);
             return Success(subTasks, "Subtasks retrieved successfully.");
         }
 
-        public async Task<ApiResponse<List<TaskItemResponse>>> CreateSubTaskAsync(string taskId, SubTaskCreateRequest request, Guid userId)
+        public async Task<ApiResponse<List<TaskItemResponse>>> CreateSubTaskAsync(Guid taskId, SubTaskCreateRequest request, Guid userId)
         {
-            if (!Guid.TryParse(taskId, out var parentTaskId))
-            {
-                return Failure<List<TaskItemResponse>>("Invalid task ID format.");
-            }
-            var parentTask = await repository.TaskItems.SingleOrDefaultAsync(task => task.Id == parentTaskId && task.OwnerId == userId && task.ParentTaskId == null);
+            var parentTask = await repository.TaskItems.SingleOrDefaultAsync(task => task.Id == taskId && task.OwnerId == userId && !task.TaskList.IsDeleted && task.ParentTaskId == null);
             if (parentTask == null)
             {
                 return Failure<List<TaskItemResponse>>("Task not found.");
@@ -215,11 +211,11 @@ namespace EasyToDo.Services
                 DueAt = request.DueAt
             });
             await repository.SaveChangesAsync();
-            var subTasks = await GetTaskResponsesAsync(userId, task => task.ParentTaskId == parentTaskId);
+            var subTasks = await GetTaskResponsesAsync(userId, task => task.ParentTaskId == taskId);
             return Success(subTasks, "Subtask created successfully.");
         }
 
-        public async Task<ApiResponse<TaskItemDetailResponse>> GetSubTaskAsync(string id, Guid userId)
+        public async Task<ApiResponse<TaskItemDetailResponse>> GetSubTaskAsync(Guid id, Guid userId)
         {
             var subTask = await FindTaskAsync(id, userId, parentTaskId: true);
             return subTask == null
@@ -227,7 +223,7 @@ namespace EasyToDo.Services
                 : Success(ToDetailResponse(subTask), "Subtask retrieved successfully.");
         }
 
-        public async Task<ApiResponse<TaskItemDetailResponse>> UpdateSubTaskAsync(string id, TaskItemUpdateRequest request, Guid userId)
+        public async Task<ApiResponse<TaskItemDetailResponse>> UpdateSubTaskAsync(Guid id, TaskItemUpdateRequest request, Guid userId)
         {
             var subTask = await FindTaskAsync(id, userId, parentTaskId: true);
             if (subTask == null)
@@ -238,7 +234,7 @@ namespace EasyToDo.Services
             return await UpdateTaskItemAsync(subTask, request, userId);
         }
 
-        public async Task<ApiResponse<object>> DeleteSubTaskAsync(string id, Guid userId)
+        public async Task<ApiResponse<object>> DeleteSubTaskAsync(Guid id, Guid userId)
         {
             var subTask = await FindTaskAsync(id, userId, parentTaskId: true);
             if (subTask == null)
@@ -253,37 +249,43 @@ namespace EasyToDo.Services
 
         private async Task<ApiResponse<TaskItemDetailResponse>> UpdateTaskItemAsync(TaskItemDAO task, TaskItemUpdateRequest request, Guid userId)
         {
-            if (!Guid.TryParse(request.ListId, out var listId))
-            {
-                return Failure<TaskItemDetailResponse>("Invalid TaskList ID format.");
-            }
+            var listId = request.ListId!.Value;
             if (!await repository.TaskLists.AnyAsync(list => list.Id == listId && list.OwnerId == userId))
             {
                 return Failure<TaskItemDetailResponse>("TaskList not found.");
             }
-            if (request.Progress is < 0 or > 100)
-            {
-                return Failure<TaskItemDetailResponse>("Progress must be between 0 and 100.");
-            }
             if (task.ParentTaskId.HasValue)
             {
-                var parentTask = await repository.TaskItems.SingleOrDefaultAsync(item => item.Id == task.ParentTaskId && item.OwnerId == userId);
+                var parentTask = await repository.TaskItems.SingleOrDefaultAsync(item => item.Id == task.ParentTaskId && item.OwnerId == userId && !item.TaskList.IsDeleted);
                 if (parentTask == null || parentTask.ListId != listId)
                 {
                     return Failure<TaskItemDetailResponse>("A subtask must belong to the same TaskList as its parent task.");
                 }
             }
 
+            var status = request.Status!.Value;
+            var priority = request.Priority!.Value;
+            var progress = request.Progress ?? 0;
+            if (progress == 100)
+            {
+                status = TaskItemStatus.Completed;
+            }
+            else if (status == TaskItemStatus.Completed)
+            {
+                return Failure<TaskItemDetailResponse>("Completed tasks must have 100 progress.");
+            }
+
             task.Title = request.Title;
             task.ListId = listId;
             task.Description = request.Description;
-            task.Status = request.Status;
-            task.Priority = request.Priority;
-            task.Progress = request.Progress;
+            task.Status = status;
+            task.Priority = priority;
+            task.Progress = progress;
             task.StartAt = request.StartAt;
             task.DueAt = request.DueAt;
-            task.CompletedAt = request.Status == TaskItemStatus.Completed ? task.CompletedAt ?? DateTime.UtcNow : null;
+            task.CompletedAt = status == TaskItemStatus.Completed ? task.CompletedAt ?? DateTime.UtcNow : null;
             task.UpdatedAt = DateTime.UtcNow;
+            await using var transaction = await repository.Database.BeginTransactionAsync();
             if (!task.ParentTaskId.HasValue)
             {
                 await repository.TaskItems
@@ -293,6 +295,7 @@ namespace EasyToDo.Services
                         .SetProperty(item => item.UpdatedAt, task.UpdatedAt));
             }
             await repository.SaveChangesAsync();
+            await transaction.CommitAsync();
             return Success(ToDetailResponse(task), "Task updated successfully.");
         }
 
@@ -302,22 +305,17 @@ namespace EasyToDo.Services
             DateTime? deletedAt = isDeleted ? updatedAt : null;
             await repository.TaskItems
                 .IgnoreQueryFilters()
-                .Where(task => task.OwnerId == userId && task.ParentTaskId == taskId)
+                .Where(task => task.OwnerId == userId && !task.TaskList.IsDeleted && (task.Id == taskId || task.ParentTaskId == taskId))
                 .ExecuteUpdateAsync(setters => setters
                     .SetProperty(task => task.IsDeleted, isDeleted)
                     .SetProperty(task => task.DeletedAt, deletedAt)
                     .SetProperty(task => task.UpdatedAt, updatedAt));
         }
 
-        private async Task<TaskItemDAO?> FindTaskAsync(string id, Guid userId, bool? parentTaskId, bool ignoreQueryFilters = false)
+        private async Task<TaskItemDAO?> FindTaskAsync(Guid taskId, Guid userId, bool? parentTaskId, bool ignoreQueryFilters = false)
         {
-            if (!Guid.TryParse(id, out var taskId))
-            {
-                return null;
-            }
-
             var tasks = ignoreQueryFilters ? repository.TaskItems.IgnoreQueryFilters() : repository.TaskItems;
-            return await tasks.SingleOrDefaultAsync(task => task.Id == taskId && task.OwnerId == userId &&
+            return await tasks.SingleOrDefaultAsync(task => task.Id == taskId && task.OwnerId == userId && !task.TaskList.IsDeleted &&
                 (!parentTaskId.HasValue || (parentTaskId.Value ? task.ParentTaskId != null : task.ParentTaskId == null)));
         }
 
@@ -325,7 +323,7 @@ namespace EasyToDo.Services
         {
             return await repository.TaskItems
                 .AsNoTracking()
-                .Where(task => task.OwnerId == userId)
+                .Where(task => task.OwnerId == userId && !task.TaskList.IsDeleted)
                 .Where(predicate)
                 .OrderBy(task => task.DueAt ?? DateTime.MaxValue)
                 .ThenByDescending(task => task.CreatedAt)

@@ -8,13 +8,15 @@
   <component name="ChangeListManager">
     <list default="true" id="ee448341-3c2b-4348-ad20-dd5405488222" name="更改" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.EasyToDo/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.EasyToDo/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/EasyToDo/Configurations/UserDAOCConfiguration.cs" beforeDir="false" afterPath="$PROJECT_DIR$/EasyToDo/Configurations/UserDAOCConfiguration.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/EasyToDo/Controllers/TaskItemController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/EasyToDo/Controllers/TaskItemController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/EasyToDo/Controllers/TaskListController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/EasyToDo/Controllers/TaskListController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/EasyToDo/Controllers/UserController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/EasyToDo/Controllers/UserController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/EasyToDo/EasyToDo.http" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/EasyToDo/Migrations/EasyToDoDbContextModelSnapshot.cs" beforeDir="false" afterPath="$PROJECT_DIR$/EasyToDo/Migrations/EasyToDoDbContextModelSnapshot.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/EasyToDo/Models/DTO/Requests/TaskItemCreateRequest.cs" beforeDir="false" afterPath="$PROJECT_DIR$/EasyToDo/Models/DTO/Requests/TaskItemCreateRequest.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/EasyToDo/Models/DTO/Requests/TaskListDeleteRequest.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/EasyToDo/Models/DTO/Requests/TaskListUpdateRequest.cs" beforeDir="false" afterPath="$PROJECT_DIR$/EasyToDo/Models/DTO/Requests/TaskListUpdateRequest.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/EasyToDo/Models/DTO/Requests/TaskItemProgressUpdateRequest.cs" beforeDir="false" afterPath="$PROJECT_DIR$/EasyToDo/Models/DTO/Requests/TaskItemProgressUpdateRequest.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/EasyToDo/Models/DTO/Requests/TaskItemStatusUpdateRequest.cs" beforeDir="false" afterPath="$PROJECT_DIR$/EasyToDo/Models/DTO/Requests/TaskItemStatusUpdateRequest.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/EasyToDo/Models/DTO/Requests/TaskItemUpdateRequest.cs" beforeDir="false" afterPath="$PROJECT_DIR$/EasyToDo/Models/DTO/Requests/TaskItemUpdateRequest.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/EasyToDo/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/EasyToDo/Program.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/EasyToDo/Services/TaskItemService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/EasyToDo/Services/TaskItemService.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/EasyToDo/Services/TaskListService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/EasyToDo/Services/TaskListService.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/EasyToDo/Services/UserService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/EasyToDo/Services/UserService.cs" afterDir="false" />
@@ -108,7 +110,7 @@
       <workItem from="1784255798539" duration="5376000" />
       <workItem from="1784270793608" duration="872000" />
       <workItem from="1784348261395" duration="3103000" />
-      <workItem from="1784509922892" duration="5353000" />
+      <workItem from="1784509922892" duration="8788000" />
     </task>
     <servers />
   </component>
@@ -136,13 +138,13 @@
         </breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/EasyToDo/Program.cs</url>
-          <line>84</line>
+          <line>102</line>
           <properties documentPath="D:\Projects\EasyToDo\EasyToDo\Program.cs" containingFunctionPresentation="lambda 表达式内 方法 'Main'">
             <startOffsets>
-              <option value="3798" />
+              <option value="4748" />
             </startOffsets>
             <endOffsets>
-              <option value="3799" />
+              <option value="4749" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="4" />

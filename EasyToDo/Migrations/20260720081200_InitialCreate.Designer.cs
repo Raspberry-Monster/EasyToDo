@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EasyToDo.Migrations
 {
     [DbContext(typeof(EasyToDoDbContext))]
-    [Migration("20260717084217_InitialCreate")]
+    [Migration("20260720081200_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -196,6 +196,9 @@ namespace EasyToDo.Migrations
                         .HasColumnName("UserName");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserName")
+                        .IsUnique();
 
                     b.ToTable("Users", (string)null);
                 });

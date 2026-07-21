@@ -19,6 +19,9 @@ namespace EasyToDo.Configurations
                 .HasMaxLength(50)
                 .HasColumnName("UserName");
 
+            builder.HasIndex(t => t.UserName)
+                .IsUnique();
+
             builder.Property(t => t.NickName)
                 .IsRequired()
                 .HasMaxLength(50)

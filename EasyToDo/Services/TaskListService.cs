@@ -10,17 +10,19 @@ namespace EasyToDo.Services
 {
     public sealed class TaskListService(EasyToDoDbContext repository)
     {
-        public async Task<ApiResponse<TaskListDetailResponse>> GetTaskListAsync(string id, Guid userId)
+        public async Task<ApiResponse<List<TaskListResponse>>> GetTaskListsAsync(Guid userId)
         {
-            if (!Guid.TryParse(id, out var taskListId))
-            {
-                return ApiResponseFactory.Failure<TaskListDetailResponse>("Invalid TaskList ID format.");
-            }
+            return ApiResponseFactory.Success(
+                await GetTaskListResponsesAsync(userId),
+                "TaskLists retrieved successfully.");
+        }
 
+        public async Task<ApiResponse<TaskListDetailResponse>> GetTaskListAsync(Guid id, Guid userId)
+        {
             var taskList = await repository.TaskLists
                 .Include(list => list.Items)
                 .AsNoTracking()
-                .SingleOrDefaultAsync(list => list.Id == taskListId && list.OwnerId == userId);
+                .SingleOrDefaultAsync(list => list.Id == id && list.OwnerId == userId);
             return taskList == null
                 ? ApiResponseFactory.Failure<TaskListDetailResponse>("TaskList not found.")
                 : ApiResponseFactory.Success(ToDetailResponse(taskList), "TaskList retrieved successfully.");
@@ -38,13 +40,9 @@ namespace EasyToDo.Services
             return ApiResponseFactory.Success(await GetTaskListResponsesAsync(userId), "TaskList Create Successful");
         }
 
-        public async Task<ApiResponse<List<TaskListResponse>>> UpdateTaskListAsync(string id, TaskListUpdateRequest request, Guid userId)
+        public async Task<ApiResponse<List<TaskListResponse>>> UpdateTaskListAsync(Guid id, TaskListUpdateRequest request, Guid userId)
         {
-            if (!Guid.TryParse(id, out var taskListId))
-            {
-                return ApiResponseFactory.Failure<List<TaskListResponse>>("Invalid TaskList ID format.");
-            }
-            var taskList = await repository.TaskLists.SingleOrDefaultAsync(list => list.Id == taskListId && list.OwnerId == userId);
+            var taskList = await repository.TaskLists.SingleOrDefaultAsync(list => list.Id == id && list.OwnerId == userId);
             if (taskList == null)
             {
                 return ApiResponseFactory.Failure<List<TaskListResponse>>("TaskList not found.");
@@ -57,13 +55,9 @@ namespace EasyToDo.Services
             return ApiResponseFactory.Success(await GetTaskListResponsesAsync(userId), "TaskList Update Successful");
         }
 
-        public async Task<ApiResponse<List<TaskListResponse>>> MarkDeleteTaskListAsync(string id, Guid userId)
+        public async Task<ApiResponse<List<TaskListResponse>>> MarkDeleteTaskListAsync(Guid id, Guid userId)
         {
-            if (!Guid.TryParse(id, out var taskListId))
-            {
-                return ApiResponseFactory.Failure<List<TaskListResponse>>("Invalid TaskList ID format.");
-            }
-            var taskList = await repository.TaskLists.SingleOrDefaultAsync(list => list.Id == taskListId && list.OwnerId == userId);
+            var taskList = await repository.TaskLists.SingleOrDefaultAsync(list => list.Id == id && list.OwnerId == userId);
             if (taskList == null)
             {
                 return ApiResponseFactory.Failure<List<TaskListResponse>>("TaskList not found.");
@@ -76,16 +70,16 @@ namespace EasyToDo.Services
             return ApiResponseFactory.Success(await GetTaskListResponsesAsync(userId), "TaskList MarkDelete Successful");
         }
 
-        public async Task<ApiResponse<List<TaskListResponse>>> UnmarkDeleteTaskListAsync(string id, Guid userId)
+        public async Task<ApiResponse<List<TaskListResponse>>> UnmarkDeleteTaskListAsync(Guid id, Guid userId)
         {
-            if (!Guid.TryParse(id, out var taskListId))
-            {
-                return ApiResponseFactory.Failure<List<TaskListResponse>>("Invalid TaskList ID format.");
-            }
-            var taskList = await repository.TaskLists.IgnoreQueryFilters().SingleOrDefaultAsync(list => list.Id == taskListId && list.OwnerId == userId);
+            var taskList = await repository.TaskLists.IgnoreQueryFilters().SingleOrDefaultAsync(list => list.Id == id && list.OwnerId == userId);
             if (taskList == null)
             {
                 return ApiResponseFactory.Failure<List<TaskListResponse>>("TaskList not found.");
+            }
+            if (!taskList.IsDeleted)
+            {
+                return ApiResponseFactory.Failure<List<TaskListResponse>>("TaskList hasn't been marked as deleted.");
             }
 
             taskList.DeletedAt = null;
@@ -95,13 +89,9 @@ namespace EasyToDo.Services
             return ApiResponseFactory.Success(await GetTaskListResponsesAsync(userId), "TaskList Unmark Delete Successful");
         }
 
-        public async Task<ApiResponse<List<TaskListResponse>>> DeleteTaskListAsync(string id, Guid userId)
+        public async Task<ApiResponse<List<TaskListResponse>>> DeleteTaskListAsync(Guid id, Guid userId)
         {
-            if (!Guid.TryParse(id, out var taskListId))
-            {
-                return ApiResponseFactory.Failure<List<TaskListResponse>>("Invalid TaskList ID format.");
-            }
-            var taskList = await repository.TaskLists.IgnoreQueryFilters().SingleOrDefaultAsync(list => list.Id == taskListId && list.OwnerId == userId);
+            var taskList = await repository.TaskLists.IgnoreQueryFilters().SingleOrDefaultAsync(list => list.Id == id && list.OwnerId == userId);
             if (taskList == null)
             {
                 return ApiResponseFactory.Failure<List<TaskListResponse>>("TaskList not found.");

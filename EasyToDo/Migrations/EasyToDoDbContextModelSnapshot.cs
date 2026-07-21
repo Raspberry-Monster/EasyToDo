@@ -194,6 +194,9 @@ namespace EasyToDo.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("UserName")
+                        .IsUnique();
+
                     b.ToTable("Users", (string)null);
                 });
 

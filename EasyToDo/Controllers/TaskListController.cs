@@ -13,9 +13,17 @@ namespace EasyToDo.Controllers
     [Authorize]
     public class TaskListController(TaskListService taskListService) : ControllerBase
     {
-        [HttpGet("{id}")]
+        [HttpGet]
+        [EndpointDescription("查询全部任务列表")]
+        public async Task<ActionResult<ApiResponse<List<TaskListResponse>>>> GetTaskListsAsync()
+        {
+            if (this.GetUserId(out var userId) is { } error) return error;
+            return this.ToActionResult(await taskListService.GetTaskListsAsync(userId));
+        }
+
+        [HttpGet("{id:guid}")]
         [EndpointDescription("查询任务列表")]
-        public async Task<ActionResult<ApiResponse<TaskListDetailResponse>>> GetTaskListAsync(string id)
+        public async Task<ActionResult<ApiResponse<TaskListDetailResponse>>> GetTaskListAsync(Guid id)
         {
             if (this.GetUserId(out var userId) is { } error) return error;
             return this.ToActionResult(await taskListService.GetTaskListAsync(id, userId));
@@ -29,33 +37,33 @@ namespace EasyToDo.Controllers
             return this.ToActionResult(await taskListService.CreateTaskListAsync(request, userId));
         }
 
-        [HttpPost("{id}/update")]
+        [HttpPost("{id:guid}/update")]
         [EndpointDescription("任务列表更新")]
-        public async Task<ActionResult<ApiResponse<List<TaskListResponse>>>> UpdateTaskListAsync(string id, [FromBody] TaskListUpdateRequest request)
+        public async Task<ActionResult<ApiResponse<List<TaskListResponse>>>> UpdateTaskListAsync(Guid id, [FromBody] TaskListUpdateRequest request)
         {
             if (this.GetUserId(out var userId) is { } error) return error;
             return this.ToActionResult(await taskListService.UpdateTaskListAsync(id, request, userId));
         }
 
-        [HttpPost("{id}/mark-delete")]
+        [HttpPost("{id:guid}/mark-delete")]
         [EndpointDescription("任务列表标记删除")]
-        public async Task<ActionResult<ApiResponse<List<TaskListResponse>>>> MarkDeleteTaskListAsync(string id)
+        public async Task<ActionResult<ApiResponse<List<TaskListResponse>>>> MarkDeleteTaskListAsync(Guid id)
         {
             if (this.GetUserId(out var userId) is { } error) return error;
             return this.ToActionResult(await taskListService.MarkDeleteTaskListAsync(id, userId));
         }
 
-        [HttpPost("{id}/unmark-delete")]
+        [HttpPost("{id:guid}/unmark-delete")]
         [EndpointDescription("任务列表取消标记删除")]
-        public async Task<ActionResult<ApiResponse<List<TaskListResponse>>>> UnmarkDeleteTaskListAsync(string id)
+        public async Task<ActionResult<ApiResponse<List<TaskListResponse>>>> UnmarkDeleteTaskListAsync(Guid id)
         {
             if (this.GetUserId(out var userId) is { } error) return error;
             return this.ToActionResult(await taskListService.UnmarkDeleteTaskListAsync(id, userId));
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:guid}")]
         [EndpointDescription("任务列表删除 (需先标记删除)")]
-        public async Task<ActionResult<ApiResponse<List<TaskListResponse>>>> DeleteTaskListAsync(string id)
+        public async Task<ActionResult<ApiResponse<List<TaskListResponse>>>> DeleteTaskListAsync(Guid id)
         {
             if (this.GetUserId(out var userId) is { } error) return error;
             return this.ToActionResult(await taskListService.DeleteTaskListAsync(id, userId));

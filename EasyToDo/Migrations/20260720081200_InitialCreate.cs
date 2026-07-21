@@ -114,6 +114,12 @@ namespace EasyToDo.Migrations
                 name: "IX_TaskLists_OwnerId",
                 table: "TaskLists",
                 column: "OwnerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_UserName",
+                table: "Users",
+                column: "UserName",
+                unique: true);
         }
 
         /// <inheritdoc />

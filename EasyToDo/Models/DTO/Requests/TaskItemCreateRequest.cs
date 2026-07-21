@@ -1,4 +1,4 @@
 ﻿namespace EasyToDo.Models.DTO.Requests
 {
-    public record TaskItemCreateRequest(string Title, string ListId, string? Description, DateTime? StartAt, DateTime? DueAt);
+    public record TaskItemCreateRequest(string Title, Guid? ListId, string? Description, DateTime? StartAt, DateTime? DueAt);
 }

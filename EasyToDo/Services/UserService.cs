@@ -14,16 +14,16 @@ namespace EasyToDo.Services
         public async Task<ApiResponse<UserLoginResponse>> LoginAsync(UserLoginRequest request)
         {
             var user = await repository.Users.FirstOrDefaultAsync(u => u.UserName == request.Username);
-            if (user == null) return ApiResponseFactory.Failure<UserLoginResponse>("User Not Found");
+            if (user == null) return ApiResponseFactory.Failure<UserLoginResponse>("Username or Password Incorrect");
             var passwordVerificationResult = passwordHasher.VerifyHashedPassword(user, user.PasswordHash!, request.Password);
             // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
             switch (passwordVerificationResult)
             {
                 case PasswordVerificationResult.Failed:
-                    return ApiResponseFactory.Failure<UserLoginResponse>("Invalid Password");
+                    return ApiResponseFactory.Failure<UserLoginResponse>("Username or Password Incorrect");
                 case PasswordVerificationResult.SuccessRehashNeeded:
                     user.PasswordHash = passwordHasher.HashPassword(user, request.Password);
-                    repository.Users.Update(user);
+                    user.UpdatedAt = DateTime.UtcNow;
                     await repository.SaveChangesAsync();
                     break;
             }
