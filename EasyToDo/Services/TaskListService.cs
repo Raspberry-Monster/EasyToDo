@@ -70,6 +70,12 @@ namespace EasyToDo.Services
             return ApiResponseFactory.Success(await GetTaskListResponsesAsync(userId), "TaskList MarkDelete Successful");
         }
 
+        public async Task<ApiResponse<List<TaskListResponse>>> DeleteAllMarkedTaskListAsync(Guid userId)
+        {
+            var taskList = await repository.TaskLists.Where(list => list.IsDeleted && list.OwnerId == userId).ExecuteDeleteAsync();
+            return ApiResponseFactory.Success(await GetTaskListResponsesAsync(userId), "TaskList DeleteAll Successful");
+        }
+
         public async Task<ApiResponse<List<TaskListResponse>>> UnmarkDeleteTaskListAsync(Guid id, Guid userId)
         {
             var taskList = await repository.TaskLists.IgnoreQueryFilters().SingleOrDefaultAsync(list => list.Id == id && list.OwnerId == userId);

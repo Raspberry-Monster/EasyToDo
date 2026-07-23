@@ -1,11 +1,12 @@
-﻿using System.Linq.Expressions;
-using EasyToDo.Models;
+﻿using EasyToDo.Models;
 using EasyToDo.Models.DAO;
 using EasyToDo.Models.DTO.Requests;
 using EasyToDo.Models.DTO.Responses;
 using EasyToDo.Models.Enums;
 using EasyToDo.Services.Database;
+using EasyToDo.Utilities;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace EasyToDo.Services
 {
@@ -122,6 +123,18 @@ namespace EasyToDo.Services
             var tasks = await GetTaskResponsesAsync(userId, item => item.ParentTaskId == null);
             return Success(tasks, "Task moved to recycle bin successfully.");
         }
+
+        public async Task<ApiResponse<List<TaskItemResponse>>> DeleteAllMarkedTaskItemAsync(Guid userId)
+        {
+            var taskItem = await repository.TaskItems
+                .AsNoTracking()
+                .IgnoreQueryFilters()
+                .Where(item => item.IsDeleted && item.OwnerId == userId)
+                .ExecuteDeleteAsync();
+            var tasks = await GetTaskResponsesAsync(userId, item => item.ParentTaskId == null);
+            return ApiResponseFactory.Success(tasks, "TaskList DeleteAll Successful");
+        }
+
 
         public async Task<ApiResponse<List<TaskItemResponse>>> UnmarkDeleteTaskAsync(Guid id, Guid userId)
         {

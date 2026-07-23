@@ -21,6 +21,7 @@ namespace EasyToDo.Models.DAO
         public TaskItemPriority Priority { get; set; } = TaskItemPriority.Normal;
         public int Progress { get; set; }
         public DateTime? StartAt { get; set; }
+        public DateTime? NotifyAt { get; set; }
         public DateTime? DueAt { get; set; }
         public DateTime? CompletedAt { get; set; }
         public bool IsDeleted { get; set; }

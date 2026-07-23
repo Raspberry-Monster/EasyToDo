@@ -46,6 +46,13 @@ namespace EasyToDo.Services
             return ApiResponseFactory.Success<object>(null, "Registration Successful");
         }
 
+        public async Task<ApiResponse<UserProfileResponse>> GetUserProfileAsync(Guid userId)
+        {
+            var user = await repository.Users.AsNoTracking().SingleOrDefaultAsync(t=>t.Id == userId);
+            if (user == null) return ApiResponseFactory.Failure<UserProfileResponse>("User Not Found");
+            return ApiResponseFactory.Success(new UserProfileResponse(user.UserName, user.NickName, user.UpdatedAt ?? DateTime.MinValue), "Password Changed Successfully");
+        }
+
         public async Task<ApiResponse<object>> UpdateUserProfileAsync(UserProfileUpdateRequest request, Guid userId)
         {
             var user = await repository.Users.FindAsync(userId);
