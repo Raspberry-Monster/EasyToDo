@@ -51,7 +51,7 @@ namespace EasyToDo.Controllers
         {
             if (this.GetUserId(out var userId) is { } error) return error;
             return this.ToActionResult(await taskListService.MarkDeleteTaskListAsync(id, userId));
-        }
+        } 
 
         [HttpPost("{id:guid}/unmark-delete")]
         [EndpointDescription("任务列表取消标记删除")]
@@ -59,6 +59,14 @@ namespace EasyToDo.Controllers
         {
             if (this.GetUserId(out var userId) is { } error) return error;
             return this.ToActionResult(await taskListService.UnmarkDeleteTaskListAsync(id, userId));
+        }
+
+        [HttpDelete("delete-all")]
+        [EndpointDescription("任务列表删除所有已标记的列表")]
+        public async Task<ActionResult<ApiResponse<List<TaskListResponse>>>> DeleteAllMarkedTaskListAsync(Guid id)
+        {
+            if (this.GetUserId(out var userId) is { } error) return error;
+            return this.ToActionResult(await taskListService.DeleteAllMarkedTaskListAsync(userId));
         }
 
         [HttpDelete("{id:guid}")]

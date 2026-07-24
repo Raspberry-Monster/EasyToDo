@@ -47,6 +47,10 @@ namespace EasyToDo.Configurations
                 .HasColumnType("timestamp with time zone")
                 .HasColumnName("StartAt");
 
+            builder.Property(t => t.NotifyAt)
+                .HasColumnType("timestamp with time zone")
+                .HasColumnName("NotifyAt");
+
             builder.Property(t => t.DueAt)
                 .HasColumnType("timestamp with time zone")
                 .HasColumnName("DueAt");

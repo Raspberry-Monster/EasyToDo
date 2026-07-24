@@ -78,6 +78,14 @@ namespace EasyToDo.Controllers
             return this.ToActionResult(await taskItemService.MarkDeleteTaskAsync(id, userId));
         }
 
+        [HttpDelete("delete-all")]
+        [EndpointDescription("删除所有已标记的项目")]
+        public async Task<ActionResult<ApiResponse<List<TaskItemResponse>>>> DeleteAllMarkedTaskListAsync(Guid id)
+        {
+            if (this.GetUserId(out var userId) is { } error) return error;
+            return this.ToActionResult(await taskItemService.DeleteAllMarkedTaskItemAsync(userId));
+        }
+
         [HttpDelete("{id:guid}")]
         [EndpointDescription("永久删除任务")]
         public async Task<ActionResult<ApiResponse<List<TaskItemResponse>>>> DeleteTaskAsync(Guid id)
